@@ -1,0 +1,57 @@
+{{> /header}}
+
+<div class="container mt-3">
+  <h2>실행결과 예시 :</h2>
+  <form class="d-flex">
+    <input id="keyword" class="form-control me-2 w-25 ms-auto" type="text" placeholder="Search" />
+    <button id="btn-search" class="btn btn-primary" type="button">Search</button>
+  </form>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>제목</th>
+        <th>내용</th>
+        <th>작성일</th>
+      </tr>
+    </thead>
+    <tbody id="board-box"></tbody>
+  </table>
+</div>
+
+<script>
+  $('#btn-search').click((event) => {
+    let keyword = $('#keyword').val();
+    search(keyword);
+  });
+
+  async function search(keyword) {
+    // console.log(keyword);
+    let response = await fetch(`/api/search?keyword=${keyword}`);
+    let responseParse = await response.json();
+    console.log(responseParse);
+
+    // CSR
+    if (responseParse.code == 1) {
+      $('#board-box').empty();
+      for (boardTbl of responseParse.data) {
+        $('#board-box').append(trRender(boardTbl));
+      }
+    }
+  }
+
+  // tr 그림 그리는 함수 -> 하나의 행을 리턴하는 함수
+  function trRender(boardTbl) {
+    return `<tr>
+                <td>${boardTbl.id}</td>
+                <td>${boardTbl.title}</td>
+                <td>${boardTbl.content}</td>
+                <td>${boardTbl.createDate}</td>
+                </tr>`;
+  }
+
+  search('');
+</script>
+
+{{> /footer}}
